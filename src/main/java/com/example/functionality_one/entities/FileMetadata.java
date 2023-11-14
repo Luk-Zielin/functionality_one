@@ -1,11 +1,13 @@
 package com.example.functionality_one.entities;
 
 import jakarta.persistence.*;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@EntityScan("com.example.model")
 public class FileMetadata {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

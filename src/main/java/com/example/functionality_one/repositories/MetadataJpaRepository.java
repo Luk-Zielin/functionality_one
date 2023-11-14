@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface metadataJpaRepository extends JpaRepository<FileMetadata,String> {
+public interface MetadataJpaRepository extends JpaRepository<FileMetadata,String> {
     Optional<FileMetadata> findByFilename(String filename);
 }
