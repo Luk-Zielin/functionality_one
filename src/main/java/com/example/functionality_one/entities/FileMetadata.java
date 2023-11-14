@@ -2,6 +2,9 @@ package com.example.functionality_one.entities;
 
 import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 public class FileMetadata {
     @Id
@@ -10,8 +13,8 @@ public class FileMetadata {
     @Column(unique = true, nullable = false)
     private String filename;
     private long size;
-
-    private String folders;
+    @ElementCollection
+    private List<String> folders = new ArrayList<>();
 
     public FileMetadata() {
 
@@ -41,15 +44,15 @@ public class FileMetadata {
         this.size = size;
     }
 
-    public String getFolders() {
+    public List<String> getFolders() {
         return folders;
     }
 
-    public void setFolders(String folders) {
+    public void setFolders(ArrayList<String> folders) {
         this.folders = folders;
     }
 
-    public FileMetadata(String filename, long size, String folders) {
+    public FileMetadata(String filename, long size, ArrayList<String> folders) {
         this.filename = filename;
         this.size = size;
         this.folders = folders;

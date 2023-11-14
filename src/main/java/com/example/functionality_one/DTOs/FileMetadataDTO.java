@@ -1,13 +1,15 @@
 package com.example.functionality_one.DTOs;
 
+import org.springframework.http.HttpMessage;
+
 public class FileMetadataDTO {
     private String filename;
-    private long size;
+    private String size;
     private String folders;
 
     public FileMetadataDTO(String filename, long size, String folders) {
         this.filename = filename;
-        this.size = size;
+        this.size = (size+" B");
         this.folders = folders;
     }
 
@@ -19,12 +21,12 @@ public class FileMetadataDTO {
         this.filename = filename;
     }
 
-    public long getSize() {
+    public String getSize() {
         return size;
     }
 
     public void setSize(long size) {
-        this.size = size;
+        this.size = (size+" B");
     }
 
     public String getFolders() {
