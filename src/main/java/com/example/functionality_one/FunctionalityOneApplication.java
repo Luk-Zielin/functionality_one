@@ -11,6 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 		"com.example.functionality_one.services"})
 public class FunctionalityOneApplication extends SpringBootServletInitializer {
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(FunctionalityOneApplication.class, args);
 		System.out.println("running!");

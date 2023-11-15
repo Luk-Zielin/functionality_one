@@ -3,9 +3,10 @@ package com.example.functionality_one.services;
 import com.example.functionality_one.DTOs.FileMetadataDTO;
 import com.example.functionality_one.entities.FileMetadata;
 import com.example.functionality_one.repositories.MetadataJpaRepository;
-import org.springframework.http.HttpStatus;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,53 +16,66 @@ public class MetadataService implements IMetadataService {
 
 
     @Override
-    public ResponseEntity<FileMetadataDTO> createFile(FileMetadataDTO fileMetadataDTO, MetadataJpaRepository Repository) {
+    public String createFile(FileMetadataDTO fileMetadataDTO, MetadataJpaRepository Repository, Model model) {
+        if (fileMetadataDTO==null){
+            return "add";
+        }
         FileMetadata fileMetadata = new FileMetadata(fileMetadataDTO.getFilename(),
                 Integer.parseInt(fileMetadataDTO.getSize().split(" ")[0]),
                 new ArrayList<String>(List.of(fileMetadataDTO.getFolders().split(", ")))
         );
         if (Repository.findByFilename(fileMetadata.getFilename()).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            return readFile(fileMetadata.getFilename(),Repository, model);
         };
         FileMetadata savedFile = Repository.save(fileMetadata);
-        return ResponseEntity.ok(fileMetadataDTO);
+        return readFile(savedFile.getFilename(),Repository, model);
     }
 
 
-    public ResponseEntity<FileMetadataDTO> readFile(String filename,MetadataJpaRepository Repository) {
+    public String readFile(String filename, MetadataJpaRepository Repository, Model model) {
+        if(filename==null){
+            return "search";
+        }
         return Repository.findByFilename(filename)
                 .map(fileMetadata -> {
-                    FileMetadataDTO fileMetadataDTO = new FileMetadataDTO(
+                    FileMetadataDTO file = new FileMetadataDTO(
                             fileMetadata.getFilename(),
                             fileMetadata.getSize(),
                             String.join(", ",fileMetadata.getFolders())
                     );
-                    return ResponseEntity.ok(fileMetadataDTO);
-                }).orElse(ResponseEntity.notFound().build());
+                    model.addAttribute("file",file);
+                    return "get";
+                }).orElse("redirect:/files");
     }
 
     @Override
-    public ResponseEntity<FileMetadata> updateFile(String filename,FileMetadataDTO updatedFile,MetadataJpaRepository Repository) {
+    public String updateFile(String filename,FileMetadataDTO updatedFile,MetadataJpaRepository Repository, Model model) {
         return Repository.findByFilename(filename)
                 .map(existingFile -> {
                     existingFile.setSize(Integer.parseInt(updatedFile.getSize().split(" ")[0]));
                     existingFile.setFolders(new ArrayList<>(List.of(updatedFile.getFolders())));
                     Repository.save(existingFile);
-                    return ResponseEntity.ok(existingFile);
+                    model.addAttribute("file", existingFile);
+                    return "redirect:/files";
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElse("edit");
     }
 
     @Override
-    public ResponseEntity<FileMetadataDTO> deleteFile(String filename,MetadataJpaRepository Repository) {
+    public String deleteFile(String filename,MetadataJpaRepository Repository, Model model) {
+        if(filename==null){
+            return "delete";
+        }
         return Repository.findByFilename(filename)
                 .map(existingFile -> {
                     Repository.delete(existingFile);
-                    FileMetadataDTO fileMetadataDTO = new FileMetadataDTO(existingFile);
-                    return ResponseEntity.ok().body(fileMetadataDTO);
+                    System.out.println("successfully deleted");
+                    return "redirect:/files";
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElse("redirect:/files");
     }
+
+
 
 
 }
