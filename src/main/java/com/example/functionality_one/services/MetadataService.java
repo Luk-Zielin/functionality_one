@@ -30,6 +30,21 @@ public class MetadataService implements IMetadataService {
         FileMetadata savedFile = Repository.save(fileMetadata);
         return readFile(savedFile.getFilename(),Repository, model);
     }
+    @Override
+    public ResponseEntity<FileMetadataDTO> createFile(FileMetadataDTO fileMetadataDTO, MetadataJpaRepository Repository) {
+        if (fileMetadataDTO==null){
+            return ResponseEntity.badRequest().build();
+        }
+        FileMetadata fileMetadata = new FileMetadata(fileMetadataDTO.getFilename(),
+                Integer.parseInt(fileMetadataDTO.getSize().split(" ")[0]),
+                new ArrayList<String>(List.of(fileMetadataDTO.getFolders().split(", ")))
+        );
+        if (Repository.findByFilename(fileMetadata.getFilename()).isPresent()) {
+            return readFile(fileMetadata.getFilename(),Repository);
+        };
+        FileMetadata savedFile = Repository.save(fileMetadata);
+        return readFile(savedFile.getFilename(),Repository);
+    }
 
 
     public String readFile(String filename, MetadataJpaRepository Repository, Model model) {
@@ -47,6 +62,21 @@ public class MetadataService implements IMetadataService {
                     return "get";
                 }).orElse("redirect:/files");
     }
+    public ResponseEntity<FileMetadataDTO> readFile(String filename, MetadataJpaRepository Repository) {
+        if(filename==null){
+            return ResponseEntity.badRequest().build();
+        }
+        return Repository.findByFilename(filename)
+                .map(fileMetadata -> {
+                    FileMetadataDTO file = new FileMetadataDTO(
+                            fileMetadata.getFilename(),
+                            fileMetadata.getSize(),
+                            String.join(", ",fileMetadata.getFolders())
+                    );
+
+                    return ResponseEntity.ok().body(file);
+                }).orElse(ResponseEntity.notFound().build());
+    }
 
     @Override
     public String updateFile(String filename,FileMetadataDTO updatedFile,MetadataJpaRepository Repository, Model model) {
@@ -59,6 +89,17 @@ public class MetadataService implements IMetadataService {
                     return "redirect:/files";
                 })
                 .orElse("edit");
+    }
+    @Override
+    public ResponseEntity<FileMetadataDTO> updateFile(String filename, FileMetadataDTO updatedFile, MetadataJpaRepository Repository) {
+        return Repository.findByFilename(filename)
+                .map(existingFile -> {
+                    existingFile.setSize(Integer.parseInt(updatedFile.getSize().split(" ")[0]));
+                    existingFile.setFolders(new ArrayList<>(List.of(updatedFile.getFolders())));
+                    Repository.save(existingFile);
+                    return ResponseEntity.ok(updatedFile);
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @Override

@@ -23,9 +23,9 @@ public class MetadataController {
     }
 
     @GetMapping("/{filename}")
-    public String getFileMetadata(@PathVariable String filename, Model model){
+    public ResponseEntity<FileMetadataDTO> getFileMetadata(@PathVariable String filename){
         System.out.println("jestem 1"); //todo usuń
-        return metadataService.readFile(filename, repository, model);
+        return metadataService.readFile(filename, repository);
     }
     @RequestMapping("/search")
     public String getFileMetadata(Model model, @RequestParam(value = "searchName",required = false) String name){
@@ -33,14 +33,14 @@ public class MetadataController {
         System.out.println(name);
         return metadataService.readFile(name, repository, model);
     }
-    @RequestMapping
+    @GetMapping
     public String startPage(){
         return "files";
     }
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public String postFile(@RequestBody FileMetadataDTO fileMetadataDTO, Model model) {
+    public ResponseEntity<FileMetadataDTO> postFile(@RequestBody FileMetadataDTO fileMetadataDTO) {
         System.out.println("jestem"); // todo usuń
-        return metadataService.createFile(fileMetadataDTO, repository, model);
+        return metadataService.createFile(fileMetadataDTO, repository);
     }
     @PostMapping("/add/new")
     public String postFromMenu(Model model,@RequestParam(value = "filename",required = false) String name,
@@ -55,8 +55,8 @@ public class MetadataController {
         return "add";
     }
     @PutMapping("/{filename}")
-    public String putFile(@PathVariable String filename, @RequestBody FileMetadataDTO updatedFile, Model model) {
-        return metadataService.updateFile(filename, updatedFile, repository, model);
+    public ResponseEntity<FileMetadataDTO> putFile(@PathVariable String filename, @RequestBody FileMetadataDTO updatedFile, Model model) {
+        return metadataService.updateFile(filename, updatedFile, repository);
     }
     @DeleteMapping("/{filename}")
     public String deleteFile(@PathVariable String filename, Model model) {

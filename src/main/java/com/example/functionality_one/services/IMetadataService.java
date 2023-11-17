@@ -6,8 +6,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 
 public interface IMetadataService {
-    public String createFile(FileMetadataDTO fileMetadataDTO, MetadataJpaRepository Repository, Model model);
-    public String deleteFile(String filename,MetadataJpaRepository Repository, Model model);
-    public String readFile(String filename, MetadataJpaRepository Repository, Model model);
-    public String updateFile(String filename, FileMetadataDTO updatedFile,MetadataJpaRepository Repository, Model model);
+    String createFile(FileMetadataDTO fileMetadataDTO, MetadataJpaRepository Repository, Model model);
+
+    ResponseEntity<FileMetadataDTO> updateFile(String filename, FileMetadataDTO updatedFile, MetadataJpaRepository Repository);
+
+    String deleteFile(String filename, MetadataJpaRepository Repository, Model model);
+
+    ResponseEntity<FileMetadataDTO> createFile(FileMetadataDTO fileMetadataDTO, MetadataJpaRepository Repository);
+
+    String readFile(String filename, MetadataJpaRepository Repository, Model model);
+    ResponseEntity<FileMetadataDTO> readFile(String filename, MetadataJpaRepository Repository);
+    String updateFile(String filename, FileMetadataDTO updatedFile,MetadataJpaRepository Repository, Model model);
 }
